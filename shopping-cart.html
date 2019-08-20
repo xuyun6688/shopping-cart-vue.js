@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			ul {
+				margin: 0;
+				padding: 0;
+			}
+			li {
+				list-style: none;
+			}
+			.item {
+				width: 160px;
+				margin-bottom: 25px;
+				position: relative;
+			}
+			.item::after {
+				display: block;
+				content: "";
+				clear: both;
+			}
+			.check-box {
+				float: left;
+				margin-right: 5px;
+				width: 20px;
+				height: 20px;
+				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoBAMAAAB+0KVeAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAkUExURUdwTJqampmZmZmZmZubm5ubm6KiopeXl5mZmZmZmaKiopmZmVmXLrgAAAALdFJOUwBD8KiAagslwtYWexMYygAAAOVJREFUKM9jYICAUotJms3hDMiAy3M3GExZgBBjc9qtHFiWLmq0WyUBLii02xDCEN6tCBNj2d0IY0rsdoBqtt6KMCl6M8QA5k0CCEFGbQMw7a2O7JCiLWC53QLIghBu0lYUJzNEq4F0N6AKcgD1c2kLoAoyblrAwLKZAQ1YOzBwbkQXlJ7AUK2ALsi0nSHaAF2QeSuDdQC6IOtmhm4BdEHGHQyzC9AF2XcyaCegC7Jtwi6IVTtWi7A6CavjsXoTa4BgDTqsgYw1OrBHHNYoxpoYsCcbrAkMa1LEnmixJ2+sGQE9ywAARBBNCX4Tud8AAAAASUVORK5CYII=);
+				background-size: 20px 20px;
+				background-repeat: no-repeat;
+				background-position: left center;
+				cursor: pointer;
+			}
+			
+			.checked {
+				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAANlBMVEUAAADpPD3tO0HrPD7qPD7qOz7qPD3pOz7qPD3qPD3pPD7rPD/pQkLzRkbqQEDpPUH/VVXpOz3Rbw31AAAAEXRSTlMA6iuA81DZ07+rpXIjFgw7CVCvuuwAAADZSURBVDjLjdVbrsMgDATQoThAeYTO/jd7fy6ioU7wfCXKEY4lMLimlpyCSEi5VNym+civRN9UdnrhEvHnrzsclbhjdZ438Rf2efM27w9mptOkUndT/eAm/x2dbgfdOQsbijfZQ2lzwf2S8eHf+ugzAvXBvdDHc0V5ci83XgqyyTEjmRwTgskxQEyOAjE5yix9dHfvGGYzfXzUHBPysozumFG4SNWxoC4t6I4ViFepuzi22ZSqo183rutdc9LMR8F+uOzH1T4A9iPFPqTsY88+SO2j2T7szdfHHy1xS+1j0wOxAAAAAElFTkSuQmCC);
+			}
+			p {
+				line-height: 20px;
+			}
+			.counter {
+				float: right;
+			}
+			.counter span {
+				float: left;
+				width: 20px;
+				height: 20px;
+				border: 1px solid lightgray;
+				font-size: 12px;
+				text-align: center;
+				line-height: 20px;
+			}
+			.minus {
+				border-top-left-radius: 3px;
+				border-bottom-left-radius: 3px;
+				border-right: 0px !important;
+				position:relative;
+			}
+			.minus:before {
+				content: "";
+				position: absolute;
+				height: 2px;
+				width: 10px;
+				background-color: lightgray;
+				top:9px;
+				left:5px
+			}
+			.plus {
+				border-top-right-radius: 3px;
+				border-bottom-right-radius: 3px;
+				border-left: 0px !important;
+				position:relative;
+			}
+			.plus:before {
+				content: "";
+				position: absolute;
+				height: 2px;
+				width: 10px;
+				background-color: lightgray;
+				top:9px;
+				right:5px
+			}
+			.plus:after {
+				content: "";
+				position: absolute;
+				height: 10px;
+				width: 2px;
+				background-color: lightgray;
+				top:5px;
+				left:9px
+			}
+			.warn {
+				color: red;
+				font-size: 12px;
+				font-weight: bold;
+				position: absolute;
+				right: 0px;
+				top: 60px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<ul>
+				<li class="item" v-for="(item,index) in product" :key="index">
+					<div>
+						<check-box v-model="selected" :value="item.id"></check-box>
+						<p>标题：{{item.title}} 价格：{{item.price}}</p>
+					</div>
+					<div class="counter">
+						<span class="minus" @click="minus(item)"></span><span class="num">{{item.count}}</span><span class="plus" @click="plus(item)"></span>
+					</div>
+					<div class="warn" v-show="item.warn">该商品最多可购买{{item.max}}件！</div>
+				</li>
+			</ul>
+			
+			
+			<div class="total-sum">
+				<check-box v-model="all"></check-box>
+				<p>总数：{{sum}}件 总价：{{total}}元</p>
+				<!-- <div>{{selected}}</div> -->
+			</div>
+		</div>
+		
+		<script type="text/javascript" src="js/vue.js"></script>
+		<script type="text/javascript">
+			Vue.component("check-box", {
+				template: "<div class='check-box' :class='{checked:flag}' @click='select' > <slot></slot> </div>",
+				data() {
+					return {
+						arr: [],
+						flag: false
+					}
+				},
+				model: {
+					prop: "val",
+					event: 'input'
+				},
+				props: {
+					val: {
+						type: [Array, Boolean],
+						required: true
+					},
+					value: {
+						default: ''
+					}
+				},
+				methods: {
+					select() {
+						this.flag = !this.flag;
+						if(typeof this.val == 'boolean') {
+							this.$emit('input', this.flag);
+						} else {
+							if(this.flag) {
+								this.arr.push(this.value);
+							} else {
+								let index = 0;
+								this.arr.forEach((item, inx) => {
+									if(item == this.value) {
+										index = inx;
+									}
+								});
+								this.arr.splice(index, 1);
+							}
+							this.$emit('input', this.arr);
+						}
+					}
+				},
+				watch: {
+					val (val) {
+						if(typeof val == 'boolean') {
+							this.flag = val;
+						} else {
+							this.arr = val;
+							let a = false;
+							this.arr.forEach((item, index) => {
+								if(item == this.value) {
+									a = true;
+								}
+							});
+							this.flag = a;
+						}
+					}
+				},
+				created() {
+					if(typeof this.val == 'boolean') {
+						this.flag = this.val;
+					} else {
+						this.arr = this.val;
+						this.arr.forEach((item, index) => {
+							if(item == this.value) {
+								this.flag = true;
+							}
+						});
+					}
+				}
+
+			});
+			
+			var app = new Vue({
+				el:'#app',
+				data: {
+					product: [
+						{id:101, title:"1", desc:"1", price: 11, count:1, max: 8, warn: false},
+						{id:102, title:"2", desc:"2", price: 12, count:1, max: 5, warn: false},
+						{id:103, title:"3", desc:"3", price: 13, count:1, max: 3, warn: false}
+					],
+					all: false,
+					selected:[]
+				},
+				methods: {
+					minus(item) {
+						if(item.count == 1) {
+							return;
+						} else {
+							item.count -= 1;
+							item.warn = false;
+						}
+						
+					},
+					
+					plus(item) {
+						if(item.count < item.max) {
+							item.count += 1;
+						} else {
+							item.count = item.max;
+							item.warn = true;
+						};
+					}
+					
+					// addToCart: function(item) {			
+					// 	if(item.select == true) {
+					// 		this.selected.push(item.id);
+					// 	} else {
+					// 		var i = 0;
+					// 		this.selected.forEach(function(itm,index) {
+					// 			if(itm == item.id) {
+					// 				i = index;
+					// 			}
+					// 		})
+					// 		this.selected.splice(i,1);
+					// 	}
+					// },
+					
+					// selectAll: function() {
+					// 	if(this.all == true) {
+					// 		var tmp = [];
+					// 		this.product.forEach(function(item,index) {
+					// 			tmp.push(item.id);
+					// 			item.select = true;
+					// 		})
+					// 		this.selected = tmp;
+					// 	} else {
+					// 		this.selected = [];
+					// 		this.product.forEach(function(item) {
+					// 			item.select = false;
+					// 		})
+					// 	}
+						
+					// }
+				},
+				computed: {
+					sum() {
+						let sum = 0;
+						this.product.forEach((item,index)=>{
+							if(this.selected.indexOf(item.id)>-1){
+								sum += item.count;
+							}
+						});
+						return sum;
+					},
+					total() {
+						let totalSum = 0;
+						this.product.forEach((item,index)=>{
+							if(this.selected.indexOf(item.id)>-1){
+								totalSum += item.count*item.price;
+							}
+						});
+						return totalSum;
+					}
+					
+				},
+				watch: {
+					selected(val) {
+						if(val.length == this.product.length) {
+							this.all = true;
+						} else {
+							this.all = false;
+						}
+					},
+					all(val){
+						if(val){
+							this.selected = [];
+							this.product.forEach(item=>{
+								this.selected.push(item.id);
+							});
+						}
+						else if(this.selected.length == this.product.length){
+							this.selected = [];
+						}
+					}
+				}
+			
+			
+			})
+		</script>
+	</body>
+</html>
