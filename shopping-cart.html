@@ -12,7 +12,7 @@
 				list-style: none;
 			}
 			.item {
-				width: 160px;
+				width: 200px;
 				margin-bottom: 25px;
 				position: relative;
 			}
@@ -106,7 +106,7 @@
 				<li class="item" v-for="(item,index) in product" :key="index">
 					<div>
 						<check-box v-model="selected" :value="item.id"></check-box>
-						<p>标题：{{item.title}} 价格：{{item.price}}</p>
+						<p>商品：{{item.title}} 价格：{{item.price}}</p>
 					</div>
 					<div class="counter">
 						<span class="minus" @click="minus(item)"></span><span class="num">{{item.count}}</span><span class="plus" @click="plus(item)"></span>
@@ -118,7 +118,7 @@
 			
 			<div class="total-sum">
 				<check-box v-model="all"></check-box>
-				<p>总数：{{sum}}件 总价：{{total}}元</p>
+				<p>全选：{{sum}}件 合计：{{total}}元</p>
 				<!-- <div>{{selected}}</div> -->
 			</div>
 		</div>
@@ -202,9 +202,9 @@
 				el:'#app',
 				data: {
 					product: [
-						{id:101, title:"1", desc:"1", price: 11, count:1, max: 8, warn: false},
-						{id:102, title:"2", desc:"2", price: 12, count:1, max: 5, warn: false},
-						{id:103, title:"3", desc:"3", price: 13, count:1, max: 3, warn: false}
+						{id:101, title:"aaa", desc:"1", price: 11.98, count:1, max: 8, warn: false},
+						{id:102, title:"bbb", desc:"2", price: 18.8, count:1, max: 5, warn: false},
+						{id:103, title:"ccc", desc:"3", price: 29.98, count:1, max: 3, warn: false}
 					],
 					all: false,
 					selected:[]
@@ -277,6 +277,7 @@
 								totalSum += item.count*item.price;
 							}
 						});
+						totalSum = totalSum.toFixed(2);
 						return totalSum;
 					}
 					
